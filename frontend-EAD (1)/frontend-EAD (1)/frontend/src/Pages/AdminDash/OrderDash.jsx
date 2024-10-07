@@ -1,30 +1,15 @@
 import { useState, useEffect } from 'react';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import { DataGrid } from '@mui/x-data-grid';
-import IconButton from '@mui/material/IconButton';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import Button from '@mui/material/Button';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
+import { Table, Button, Modal, Navbar, Form, Container } from 'react-bootstrap';
+import { PencilSquare, Trash } from 'react-bootstrap-icons';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import SideBar from '../../Components/SideBar/SideBar.jsx';
 import configs from '../../config.js';
-import { TextField } from '@material-ui/core';
 
 const OrderDash = () => {
     const [post, setPost] = useState([]);
-    const [open, setOpen] = useState(false);
-    const [open2, setOpen2] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [showCancelModal, setShowCancelModal] = useState(false);
     const [currentOrder, setCurrentOrder] = useState({});
     const token = sessionStorage.getItem('token');
     const userRole = sessionStorage.getItem("userRole");
@@ -55,7 +40,7 @@ const OrderDash = () => {
             })
             .then(() => {
                 fetchDetails();
-                setOpen2(false);
+                setShowCancelModal(false);
             })
             .catch((error) => {
                 console.error('Failed to update order status:', error);
@@ -69,21 +54,16 @@ const OrderDash = () => {
 
     const handleEditClick = (order) => {
         setCurrentOrder(order);
-        setOpen(true);
+        setShowEditModal(true);
     };
 
     const handleCancellClick = (order) => {
         setCurrentOrder(order);
-        setOpen2(true);
+        setShowCancelModal(true);
     };
 
-    const handleClose = () => {
-        setOpen(false);
-    };
-
-    const handleClose2 = () => {
-        setOpen2(false);
-    };
+    const handleCloseEditModal = () => setShowEditModal(false);
+    const handleCloseCancelModal = () => setShowCancelModal(false);
 
     const handleStatusChange = (event) => {
         setCurrentOrder({ ...currentOrder, orderStatus: event.target.value });
@@ -96,7 +76,7 @@ const OrderDash = () => {
             })
             .then(() => {
                 fetchDetails();
-                setOpen(false);
+                setShowEditModal(false);
             })
             .catch((error) => {
                 console.error('Failed to update order status:', error);
@@ -107,74 +87,6 @@ const OrderDash = () => {
                 });
             });
     };
-
-    const columns = [
-        { field: 'vendorID', headerName: 'Vendor ID', width: 210 },
-        { field: 'customerID', headerName: 'Customer ID', width: 210 },
-        { field: 'productID', headerName: 'Product ID', width: 210 },
-        { field: 'quantity', headerName: 'Quantity', width: 150 },
-        { field: 'totalPrice', headerName: 'Price', width: 150 },
-        {
-            field: 'orderStatus',
-            headerName: 'Status',
-            width: 220,
-            renderCell: (params) => (
-                <div>
-                    {params.value === 'Processing' && (
-                        <Button variant="contained" color="warning">
-                            {params.value}
-                        </Button>
-                    )}
-                    {params.value === 'Ready' && (
-                        <Button variant="contained" color="success">
-                            {params.value}
-                        </Button>
-                    )}
-                    {params.value === 'Partially Delivered' && (
-                        <Button variant="contained" style={{ backgroundColor: 'orange' }}>
-                            {params.value}
-                        </Button>
-                    )}
-                    {params.value === 'Delivered' && (
-                        <Button variant="contained" color="primary">
-                            {params.value}
-                        </Button>
-                    )}
-                    {params.value === 'Cancelled' && (
-                        <Button variant="contained" color="error">
-                            {params.value}
-                        </Button>
-                    )}
-                </div>
-            )
-        },
-        { field: 'deliveryDate', headerName: 'Delivery Date', width: 150 },
-        { field: 'cancellationReason', headerName: 'Cancellation Reason', width: 300 },
-        {
-            field: 'actions',
-            headerName: 'Actions',
-            width: 150,
-            renderCell: (params) => (
-                (userRole === 'Admin' || userRole === 'CSR') && (
-                    <div>
-                        {params.row.orderStatus !== 'Cancelled' && params.row.orderStatus !== 'Delivered' ? (
-                            <IconButton color="primary" onClick={() => handleEditClick(params.row)}>
-                                <EditIcon />
-                            </IconButton>
-                        ) : <Button color='primary' disabled>No Actions</Button>}
-                        {params.row.orderStatus === 'Processing' || params.row.orderStatus === 'Ready' ? (
-                            <IconButton color="error" onClick={() => handleCancellClick(params.row)}>
-                                <DeleteIcon />
-                            </IconButton>
-                        ) :
-                            null}
-
-                    </div>
-                )
-
-            ),
-        },
-    ];
 
     return (
         <div style={{ display: 'flex', height: '100vh', width: '100%' }}>
@@ -188,13 +100,11 @@ const OrderDash = () => {
                     flexDirection: 'column',
                 }}
             >
-                <AppBar position="static" sx={{ backgroundColor: '#1c2331', boxShadow: 'none' }}>
-                    <Toolbar>
-                        <Typography variant="h6" component="div">
-                            Order Management
-                        </Typography>
-                    </Toolbar>
-                </AppBar>
+                <Navbar bg="dark" variant="dark">
+                    <Container>
+                        <Navbar.Brand>Order Management</Navbar.Brand>
+                    </Container>
+                </Navbar>
 
                 <div
                     style={{
@@ -204,53 +114,125 @@ const OrderDash = () => {
                         maxWidth: '161vh',
                     }}
                 >
-                    <Typography variant="h5" gutterBottom color={'black'}>
-                        Order Details
-                    </Typography>
-                    <div style={{ width: '100%' }}>
-                        <DataGrid rows={post} columns={columns} pageSize={5} />
-                    </div>
+                    <h5>Order Details</h5>
+                    <Table striped bordered hover>
+                        <thead>
+                            <tr>
+                                <th>Vendor ID</th>
+                                <th>Customer ID</th>
+                                <th>Product ID</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                                <th>Status</th>
+                                <th>Delivery Date</th>
+                                <th>Cancellation Reason</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {post.map((order) => (
+                                <tr key={order.id}>
+                                    <td>{order.vendorID}</td>
+                                    <td>{order.customerID}</td>
+                                    <td>{order.productID}</td>
+                                    <td>{order.quantity}</td>
+                                    <td>{order.totalPrice}</td>
+                                    <td>
+                                        <Button
+                                            variant={
+                                                order.orderStatus === 'Processing' ? 'warning'
+                                                    : order.orderStatus === 'Ready' ? 'success'
+                                                    : order.orderStatus === 'Partially Delivered' ? 'secondary'
+                                                    : order.orderStatus === 'Delivered' ? 'primary'
+                                                    : 'danger'
+                                            }
+                                            disabled
+                                        >
+                                            {order.orderStatus}
+                                        </Button>
+                                    </td>
+                                    <td>{order.deliveryDate}</td>
+                                    <td>{order.cancellationReason}</td>
+                                    <td>
+                                        {(userRole === 'Admin' || userRole === 'CSR') && (
+                                            <>
+                                                {order.orderStatus !== 'Cancelled' && order.orderStatus !== 'Delivered' && (
+                                                    <Button variant="primary" onClick={() => handleEditClick(order)}>
+                                                        <PencilSquare />
+                                                    </Button>
+                                                )}
+                                                {(order.orderStatus === 'Processing' || order.orderStatus === 'Ready') && (
+                                                    <Button variant="danger" onClick={() => handleCancellClick(order)}>
+                                                        <Trash />
+                                                    </Button>
+                                                )}
+                                            </>
+                                        )}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </Table>
                 </div>
-                <Dialog open={open} onClose={handleClose}>
-                    <DialogTitle>Update Order Status</DialogTitle>
-                    <DialogContent>
-                        <FormControl fullWidth>
-                            <InputLabel id="status-label">Status</InputLabel>
-                            <Select
-                                labelId="status-label"
-                                value={currentOrder.orderStatus || ''}
-                                label="Status"
-                                onChange={handleStatusChange}
-                            >
-                                <MenuItem value="Processing">Processing</MenuItem>
-                                <MenuItem value="Ready">Ready</MenuItem>
-                                <MenuItem value="Partially Delivered">Partially Delivered</MenuItem>
-                                <MenuItem value="Delivered">Delivered</MenuItem>
-                            </Select>
-                        </FormControl>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={handleClose}>Cancel</Button>
-                        <Button onClick={handleUpdate}>Update</Button>
-                    </DialogActions>
-                </Dialog>
-                <Dialog open={open2} onClose={handleClose2}>
-                    <DialogTitle>Cancell Order</DialogTitle>
-                    <DialogContent>
-                        <FormControl fullWidth>
-                            <TextField
-                                label="Reason"
-                                fullWidth
-                                value={currentOrder.cancellationReason || ''}
-                                onChange={(e) => setCurrentOrder({ ...currentOrder, cancellationReason: e.target.value })}
-                            />
-                        </FormControl>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={handleClose2}>Cancel</Button>
-                        <Button onClick={handleCancell}>Confirm</Button>
-                    </DialogActions>
-                </Dialog>
+
+                {/* Edit Modal */}
+                <Modal show={showEditModal} onHide={handleCloseEditModal}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Update Order Status</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Form>
+                            <Form.Group controlId="statusSelect">
+                                <Form.Label>Status</Form.Label>
+                                <Form.Control
+                                    as="select"
+                                    value={currentOrder.orderStatus || ''}
+                                    onChange={handleStatusChange}
+                                >
+                                    <option value="Processing">Processing</option>
+                                    <option value="Ready">Ready</option>
+                                    <option value="Partially Delivered">Partially Delivered</option>
+                                    <option value="Delivered">Delivered</option>
+                                </Form.Control>
+                            </Form.Group>
+                        </Form>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={handleCloseEditModal}>
+                            Cancel
+                        </Button>
+                        <Button variant="primary" onClick={handleUpdate}>
+                            Update
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+
+                {/* Cancel Modal */}
+                <Modal show={showCancelModal} onHide={handleCloseCancelModal}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Cancel Order</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <Form>
+                            <Form.Group controlId="reasonText">
+                                <Form.Label>Reason</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    value={currentOrder.cancellationReason || ''}
+                                    onChange={(e) => setCurrentOrder({ ...currentOrder, cancellationReason: e.target.value })}
+                                />
+                            </Form.Group>
+                        </Form>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={handleCloseCancelModal}>
+                            Cancel
+                        </Button>
+                        <Button variant="danger" onClick={handleCancell}>
+                            Confirm
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
             </div>
         </div>
     );
