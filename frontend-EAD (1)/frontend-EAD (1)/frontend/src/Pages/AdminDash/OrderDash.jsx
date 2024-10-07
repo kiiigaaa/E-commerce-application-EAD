@@ -8,6 +8,9 @@ import configs from '../../config.js';
 
 const OrderDash = () => {
     const [post, setPost] = useState([]);
+    const [filteredOrders, setFilteredOrders] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [statusSearchTerm, setStatusSearchTerm] = useState(''); // Stores the status filter
     const [showEditModal, setShowEditModal] = useState(false);
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [currentOrder, setCurrentOrder] = useState({});
@@ -17,6 +20,10 @@ const OrderDash = () => {
     useEffect(() => {
         fetchDetails();
     }, []);
+
+    useEffect(() => {
+        filterOrders();
+    }, [post, searchTerm, statusSearchTerm]);
 
     const fetchDetails = async () => {
         try {
@@ -31,6 +38,17 @@ const OrderDash = () => {
         } catch (error) {
             console.error('Error fetching post details:', error);
         }
+    };
+
+    const filterOrders = () => {
+        const lowercasedTerm = searchTerm.toLowerCase();
+        const filtered = post.filter(order => 
+            (order.vendorID.toLowerCase().includes(lowercasedTerm) ||
+            order.customerID.toLowerCase().includes(lowercasedTerm) ||
+            order.productID.toLowerCase().includes(lowercasedTerm)) &&
+            (statusSearchTerm === '' || order.orderStatus.toLowerCase() === statusSearchTerm.toLowerCase())
+        );
+        setFilteredOrders(filtered);
     };
 
     const handleCancell = () => {
@@ -59,7 +77,19 @@ const OrderDash = () => {
 
     const handleCancellClick = (order) => {
         setCurrentOrder(order);
-        setShowCancelModal(true);
+        // Show confirmation dialog before proceeding to cancellation
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "Do you really want to cancel this order?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, cancel it!',
+            cancelButtonText: 'No, keep it'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                setShowCancelModal(true);
+            }
+        });
     };
 
     const handleCloseEditModal = () => setShowEditModal(false);
@@ -88,6 +118,15 @@ const OrderDash = () => {
             });
     };
 
+    // Calculate total price by vendor
+    const calculateTotalPriceByVendor = (vendorID) => {
+        return post
+            .filter(order => order.vendorID === vendorID)
+            .reduce((total, order) => total + (order.totalPrice * order.quantity), 0); // Multiply quantity by price
+    };
+
+    const uniqueVendorIDs = [...new Set(post.map(order => order.vendorID))];
+
     return (
         <div style={{ display: 'flex', height: '100vh', width: '100%' }}>
             <SideBar />
@@ -114,6 +153,25 @@ const OrderDash = () => {
                         maxWidth: '161vh',
                     }}
                 >
+                    <Form.Control
+                        type="text"
+                        placeholder="Search by Vendor ID, Customer ID or Product ID"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                    <Form.Control
+                        as="select"
+                        value={statusSearchTerm}
+                        onChange={(e) => setStatusSearchTerm(e.target.value)}
+                        style={{ marginTop: '10px' }}
+                    >
+                        <option value="">Filter by Order Status</option>
+                        <option value="Processing">Processing</option>
+                        <option value="Ready">Ready</option>
+                        <option value="Partially Delivered">Partially Delivered</option>
+                        <option value="Delivered">Delivered</option>
+                        <option value="Cancelled">Cancelled</option>
+                    </Form.Control>
                     <h5>Order Details</h5>
                     <Table striped bordered hover>
                         <thead>
@@ -130,7 +188,7 @@ const OrderDash = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {post.map((order) => (
+                            {filteredOrders.map((order) => (
                                 <tr key={order.id}>
                                     <td>{order.vendorID}</td>
                                     <td>{order.customerID}</td>
@@ -173,6 +231,24 @@ const OrderDash = () => {
                             ))}
                         </tbody>
                     </Table>
+
+                    <h5>Total Price by Vendor</h5>
+                    <Table striped bordered hover>
+                        <thead>
+                            <tr>
+                                <th>Vendor ID</th>
+                                <th>Total Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {uniqueVendorIDs.map(vendorID => (
+                                <tr key={vendorID}>
+                                    <td>{vendorID}</td>
+                                    <td>{calculateTotalPriceByVendor(vendorID)}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </Table>
                 </div>
 
                 {/* Edit Modal */}
@@ -199,10 +275,10 @@ const OrderDash = () => {
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="secondary" onClick={handleCloseEditModal}>
-                            Cancel
+                            Close
                         </Button>
                         <Button variant="primary" onClick={handleUpdate}>
-                            Update
+                            Save Changes
                         </Button>
                     </Modal.Footer>
                 </Modal>
@@ -213,23 +289,22 @@ const OrderDash = () => {
                         <Modal.Title>Cancel Order</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        <Form>
-                            <Form.Group controlId="reasonText">
-                                <Form.Label>Reason</Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    value={currentOrder.cancellationReason || ''}
-                                    onChange={(e) => setCurrentOrder({ ...currentOrder, cancellationReason: e.target.value })}
-                                />
-                            </Form.Group>
-                        </Form>
+                        <Form.Group controlId="cancelReason">
+                            <Form.Label>Cancellation Reason</Form.Label>
+                            <Form.Control
+                                as="textarea"
+                                rows={3}
+                                value={currentOrder.cancellationReason || ''}
+                                onChange={(e) => setCurrentOrder({ ...currentOrder, cancellationReason: e.target.value })}
+                            />
+                        </Form.Group>
                     </Modal.Body>
                     <Modal.Footer>
                         <Button variant="secondary" onClick={handleCloseCancelModal}>
-                            Cancel
+                            Close
                         </Button>
                         <Button variant="danger" onClick={handleCancell}>
-                            Confirm
+                            Cancel Order
                         </Button>
                     </Modal.Footer>
                 </Modal>
@@ -239,3 +314,4 @@ const OrderDash = () => {
 };
 
 export default OrderDash;
+
