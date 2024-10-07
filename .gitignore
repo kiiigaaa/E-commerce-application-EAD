@@ -1,0 +1,44 @@
+# Ignore build and compiled files
+/bin/
+/obj/
+/binaries/
+
+# Ignore Visual Studio files
+.vscode/
+.vs/
+*.suo
+*.user
+*.sln.docstates
+
+# Ignore build output, packages, and temporary files
+*.log
+*.swp
+*.swo
+*.zip
+*.tar.gz
+*.rar
+*.gz
+*.exe
+*.msi
+*.com
+*.bat
+*.dll
+*.pdb
+*.class
+*.o
+
+# Ignore node_modules directory
+node_modules/
+
+# Ignore package-lock.json for Node.js projects
+package-lock.json
+
+# Ignore .DS_Store files on macOS
+.DS_Store
+
+# Ignore environment-specific files
+.env
+
+# Ignore sensitive or private data
+secrets.json
+passwords.txt
