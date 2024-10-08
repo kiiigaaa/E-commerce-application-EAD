@@ -1,4 +1,18 @@
-﻿﻿using Microsoft.AspNetCore.Mvc;
+/**************************************************************************
+ * File:        MainController.cs
+ * Author:      common
+ * Date:        20241006
+ * Description: Main Controller for handling user login and user creation.
+//                    Contains methods for generating JWT tokens and managing user accounts
+ * ------------------------------------------------------------------------
+ * Revision History:
+ * Date          | Author      | Description
+ * ------------------------------------------------------------------------
+ * 20241006        |     common | Main Controller for handling user login and user creation.
+//                                   Contains methods for generating JWT tokens and managing user accounts
+ *
+ **************************************************************************/
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
