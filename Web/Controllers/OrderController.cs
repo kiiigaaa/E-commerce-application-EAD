@@ -1,4 +1,21 @@
-﻿﻿using Microsoft.AspNetCore.Authorization;
+/**************************************************************************
+ * File:        OrderController.cs
+ * Author:      Hansani
+ * Date:        20241006
+ * Description: This controller handles the order-related API endpoints, including creating,
+//              retrieving, updating, and canceling orders. It utilizes dependency injection to 
+//              access the data layer services for order management
+//                    
+ * ------------------------------------------------------------------------
+ * Revision History:
+ * Date          | Author      | Description
+ * ------------------------------------------------------------------------
+ * 20241006        |    Hansani|   Added API endpoint including creating,
+//                                     retrieving, updating, and canceling orders
+//                                   
+ *
+ **************************************************************************/
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Web.DataAccessLayer;
