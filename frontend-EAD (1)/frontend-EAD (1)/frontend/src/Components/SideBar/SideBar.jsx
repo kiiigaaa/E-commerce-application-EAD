@@ -1,20 +1,9 @@
 import { useState, useEffect } from 'react';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import Toolbar from '@mui/material/Toolbar';
-import Drawer from '@mui/material/Drawer';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import InventoryIcon from '@mui/icons-material/Inventory';
-import BadgeIcon from '@mui/icons-material/Badge';
-import LogoutIcon from '@mui/icons-material/Logout';
-import ReceiptIcon from '@mui/icons-material/Receipt'; // Icon for Invoice
+import { Navbar, Nav, Button, Container } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { Typography } from '@material-ui/core';
+import { Person, BoxSeam, Cart4, Shop, People, Receipt, DoorOpen } from 'react-bootstrap-icons'; // Icons from react-bootstrap-icons
 
 const SideBar = () => {
-  const defaultTheme = createTheme();
   const [selectedItem, setSelectedItem] = useState('Dashboard');
   const navigate = useNavigate();
   const userRole = sessionStorage.getItem("userRole");
@@ -38,113 +27,59 @@ const SideBar = () => {
   };
 
   return (
-    <ThemeProvider theme={defaultTheme}>
-      <Drawer
-        anchor="left"
-        variant="permanent"
-        sx={{
-          width: 240,
-          flexShrink: 0,
-          '& .MuiDrawer-paper': {
-            width: 240,
-            boxSizing: 'border-box',
-            backgroundColor: '#1c2331',
-            color: '#ffffff',
-          },
-        }}
-      >
-        <>
-          <Toolbar sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 100 }}>
-            <Typography variant="h5" sx={{ color: '#ecf0f1' }}>
-              Main Panel
-            </Typography>
-          </Toolbar>
-          <List>
-            {userRole === 'Admin' && (
-              <>
-                <ListItem
-                  button
-                  selected={selectedItem === 'userDash'}
-                  onClick={() => handleItemClick('userDash')}
-                  sx={{ '&:hover': { backgroundColor: '#2c3e50' } }}
-                >
-                  <ListItemIcon>
-                    <BadgeIcon sx={{ color: '#ecf0f1' }} />
-                  </ListItemIcon>
-                  <ListItemText primary="User Panel" />
-                </ListItem>
-              </>
-            )}
-            <ListItem
-              button
-              selected={selectedItem === 'inventoryDash'}
-              onClick={() => handleItemClick('inventoryDash')}
-              sx={{ '&:hover': { backgroundColor: '#2c3e50' } }}
-            >
-              <ListItemIcon>
-                <BadgeIcon sx={{ color: '#ecf0f1' }} />
-              </ListItemIcon>
-              <ListItemText primary="Inventory Panel" />
-            </ListItem>
-            <ListItem
-              button
-              selected={selectedItem === 'productDash'}
-              onClick={() => handleItemClick('productDash')}
-              sx={{ '&:hover': { backgroundColor: '#2c3e50' } }}
-            >
-              <ListItemIcon>
-                <BadgeIcon sx={{ color: '#ecf0f1' }} />
-              </ListItemIcon>
-              <ListItemText primary="Product Panel" />
-            </ListItem>
-            <ListItem
-              button
-              selected={selectedItem === 'orderDash'}
-              onClick={() => handleItemClick('orderDash')}
-              sx={{ '&:hover': { backgroundColor: '#2c3e50' } }}
-            >
-              <ListItemIcon>
-                <BadgeIcon sx={{ color: '#ecf0f1' }} />
-              </ListItemIcon>
-              <ListItemText primary="Order Panel" />
-            </ListItem>
-            <ListItem
-              button
-              selected={selectedItem === 'vendorDash'}
-              onClick={() => handleItemClick('vendorDash')}
-              sx={{ '&:hover': { backgroundColor: '#2c3e50' } }}
-            >
-              <ListItemIcon>
-                <BadgeIcon sx={{ color: '#ecf0f1' }} />
-              </ListItemIcon>
-              <ListItemText primary="Vendor Panel" />
-            </ListItem>
-            {/* Add the Invoice Panel */}
-            <ListItem
-              button
-              selected={selectedItem === 'invoiceDash'}
-              onClick={() => handleItemClick('invoiceDash')}
-              sx={{ '&:hover': { backgroundColor: '#2c3e50' } }}
-            >
-              <ListItemIcon>
-                <ReceiptIcon sx={{ color: '#ecf0f1' }} />
-              </ListItemIcon>
-              <ListItemText primary="Invoice Panel" />
-            </ListItem>
-          </List>
-          <List sx={{ marginTop: 'auto' }}>
-            <ListItem button onClick={handleLogout} sx={{ '&:hover': { backgroundColor: '#2c3e50' } }}>
-              <LogoutIcon>
-                <InventoryIcon sx={{ color: '#ecf0f1' }} />
-              </LogoutIcon>
-              <ListItemText primary="Logout" sx={{ paddingLeft: '50px' }} />
-            </ListItem>
-          </List>
-        </>
-      </Drawer>
-    </ThemeProvider>
+    <Navbar bg="dark" variant="dark" expand="lg" className="flex-column" style={{ height: '100vh', width: '240px' }}>
+      <Container className="d-flex flex-column">
+        <Navbar.Brand className="text-center">Main Panel</Navbar.Brand>
+        <Nav className="flex-column w-100">
+          {userRole === 'Admin' && (
+            <Nav.Link 
+              active={selectedItem === 'userDash'} 
+              onClick={() => handleItemClick('userDash')} 
+              className="d-flex align-items-center text-light">
+              <People className="me-2" /> User Panel
+            </Nav.Link>
+          )}
+          <Nav.Link 
+            active={selectedItem === 'inventoryDash'} 
+            onClick={() => handleItemClick('inventoryDash')} 
+            className="d-flex align-items-center text-light">
+            <BoxSeam className="me-2" /> Inventory Panel
+          </Nav.Link>
+          <Nav.Link 
+            active={selectedItem === 'productDash'} 
+            onClick={() => handleItemClick('productDash')} 
+            className="d-flex align-items-center text-light">
+            <Cart4 className="me-2" /> Product Panel
+          </Nav.Link>
+          <Nav.Link 
+            active={selectedItem === 'orderDash'} 
+            onClick={() => handleItemClick('orderDash')} 
+            className="d-flex align-items-center text-light">
+            <Shop className="me-2" /> Order Panel
+          </Nav.Link>
+          <Nav.Link 
+            active={selectedItem === 'vendorDash'} 
+            onClick={() => handleItemClick('vendorDash')} 
+            className="d-flex align-items-center text-light">
+            <Person className="me-2" /> Vendor Panel
+          </Nav.Link>
+          {/* Add Invoice Panel */}
+          <Nav.Link 
+            active={selectedItem === 'invoiceDash'} 
+            onClick={() => handleItemClick('invoiceDash')} 
+            className="d-flex align-items-center text-light">
+            <Receipt className="me-2" /> Invoice Panel
+          </Nav.Link>
+        </Nav>
+
+        <div className="mt-auto">
+          <Button variant="danger" onClick={handleLogout} className="d-flex align-items-center">
+            <DoorOpen className="me-2" /> Logout
+          </Button>
+        </div>
+      </Container>
+    </Navbar>
   );
 };
 
 export default SideBar;
-
