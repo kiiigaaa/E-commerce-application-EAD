@@ -1,9 +1,9 @@
-import { useState } from 'react';
-import { TextField, Button, Container, Grid, Typography, AppBar, Toolbar } from '@mui/material';
+import React, { useState } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import configs from '../../config.js';
+import { Container, Form, Button, Row, Col, Navbar } from 'react-bootstrap';
 
 const AddVendor = () => {
     const navigate = useNavigate();
@@ -19,7 +19,7 @@ const AddVendor = () => {
                 await axios.post(
                     `${configs.apiUrl}/Vendor/CreateVendor`, newObject,
                     { headers: { 'Authorization': `Bearer ${token}` } }
-                )
+                );
                 Swal.fire({
                     title: "Success!",
                     text: "Added successfully.",
@@ -42,10 +42,12 @@ const AddVendor = () => {
     const validateForm = () => {
         let errors = {};
         let isValid = true;
-        if (!newObject.vendorName) {
+
+        if (!newObject.vendorName.trim()) {
             errors.vendorName = 'Vendor Name is required';
             isValid = false;
         }
+
         setErrors(errors);
         return isValid;
     };
@@ -56,40 +58,44 @@ const AddVendor = () => {
 
     return (
         <div style={{ height: '100vh', paddingTop: '64px', backgroundColor: '#f4f4f4' }}>
-            <AppBar position="fixed" style={{ backgroundColor: '#1c2331', boxShadow: 'none' }}>
-                <Toolbar>
-                    <Typography variant="h6" style={{ flexGrow: 1, fontWeight: 'bold' }}>
-                        Add Vendor
-                    </Typography>
-                    <div style={{ flexGrow: 1 }}></div>
-                    <Button variant="contained" color="primary" onClick={handleAdd}>
-                        Add Vendor
-                    </Button>
-                    <Button variant="contained" color="error" onClick={handleCancel} style={{ marginLeft: '8px' }}>
-                        Cancel
-                    </Button>
-                </Toolbar>
-            </AppBar>
-            <Container maxWidth="md" style={{ marginTop: '20px' }}>
-                <div style={{ backgroundColor: '#fff', padding: '24px', borderRadius: '8px', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)' }}>
-                    <Grid container spacing={3}>
-                        <Grid item xs={12}>
-                            <Typography variant="h6" style={{ marginBottom: '10px', color: 'black' }}>
-                                User Vendor
-                            </Typography>
-                            <hr />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                label="Vendor Name"
-                                fullWidth
-                                value={newObject.vendorName}
-                                onChange={(e) => setNewObject({ ...newObject, vendorName: e.target.value })}
-                                error={!!errors.vendorName}
-                                helperText={errors.vendorName}
-                            />
-                        </Grid>
-                    </Grid>
+            <Navbar bg="dark" variant="dark" fixed="top">
+                <Container>
+                    <Navbar.Brand>Add Vendor</Navbar.Brand>
+                    <div className="ml-auto">
+                        <Button variant="primary" onClick={handleAdd}>Add Vendor</Button>
+                        <Button variant="danger" onClick={handleCancel} className="ml-2">Cancel</Button>
+                    </div>
+                </Container>
+            </Navbar>
+            <Container style={{ marginTop: '80px' }}>
+                <div className="p-4 bg-white rounded shadow-sm">
+                    <Form>
+                        <Row>
+                            <Col xs={12}>
+                                <h5 className="mb-4">Vendor Form</h5>
+                                <Form.Group controlId="formVendorName">
+                                    <Form.Label>Vendor Name</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        placeholder="Enter vendor name"
+                                        value={newObject.vendorName}
+                                        onChange={(e) => setNewObject({ ...newObject, vendorName: e.target.value })}
+                                        isInvalid={!!errors.vendorName}
+                                    />
+                                    <Form.Control.Feedback type="invalid">
+                                        {errors.vendorName}
+                                    </Form.Control.Feedback>
+                                </Form.Group>
+                            </Col>
+                        </Row>
+                        <hr />
+                        <Button variant="primary" onClick={handleAdd}>
+                            Add Vendor
+                        </Button>
+                        <Button variant="danger" onClick={handleCancel} className="ml-2">
+                            Cancel
+                        </Button>
+                    </Form>
                 </div>
             </Container>
         </div>
@@ -97,3 +103,4 @@ const AddVendor = () => {
 };
 
 export default AddVendor;
+
