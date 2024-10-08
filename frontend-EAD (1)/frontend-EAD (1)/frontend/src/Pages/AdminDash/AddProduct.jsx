@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { TextField, Button, Container, Grid, Typography, AppBar, Toolbar, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import { Container, Form, Button, Row, Col, Navbar } from 'react-bootstrap';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
@@ -27,8 +27,7 @@ const AddProduct = () => {
         if (info.editBtn) {
             setNewObject(info.row);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [info]);
 
     const handleAdd = async () => {
         if (validateForm()) {
@@ -67,7 +66,7 @@ const AddProduct = () => {
             status: newObject.status,
             vendorID: newObject.vendorID,
             createdDate: info.row.createdDate
-        }
+        };
         if (validateForm()) {
             try {
                 await axios.put(
@@ -93,7 +92,7 @@ const AddProduct = () => {
                 });
             }
         }
-    }
+    };
 
     const validateForm = () => {
         let errors = {};
@@ -141,136 +140,134 @@ const AddProduct = () => {
 
     return (
         <div style={{ height: '140vh', paddingTop: '64px', backgroundColor: '#f4f4f4' }}>
-            <AppBar position="fixed" style={{ backgroundColor: '#1c2331', boxShadow: 'none' }}>
-                <Toolbar>
-                    {(info.editBtn) ? (
-                        <Typography variant="h6" style={{ flexGrow: 1, fontWeight: 'bold' }}>
-                            Edit Product
-                        </Typography>
-                    ) : (
-                        <Typography variant="h6" style={{ flexGrow: 1, fontWeight: 'bold' }}>
-                            Add Product
-                        </Typography>
-                    )}
-
-                    <div style={{ flexGrow: 1 }}></div>
-                    {(info.editBtn) ? (
-                        <Button variant="contained" color="primary" onClick={handleEdit}>
-                            Edit Product
-                        </Button>
-                    ) : (
-                        <Button variant="contained" color="primary" onClick={handleAdd}>
-                            Add Product
-                        </Button>
-                    )}
-                    <Button variant="contained" color="error" onClick={handleCancel} style={{ marginLeft: '8px' }}>
-                        Cancel
-                    </Button>
-                </Toolbar>
-            </AppBar>
-            <Container maxWidth="md" style={{ marginTop: '20px' }}>
-                <div style={{ backgroundColor: '#fff', padding: '24px', borderRadius: '8px', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)' }}>
-                    <Grid container spacing={3}>
-                        <Grid item xs={12}>
-                            <Typography variant="h6" style={{ marginBottom: '10px', color: 'black' }}>
-                                Product Form
-                            </Typography>
-                            <hr />
-                        </Grid>
-                        {!info.editBtn && (
-                            <>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        label="Product ID"
-                                        fullWidth
-                                        value={newObject.productID}
-                                        onChange={(e) => setNewObject({ ...newObject, productID: e.target.value })}
-                                        error={!!errors.productID}
-                                        helperText={errors.productID}
-                                    />
-                                </Grid>
-                            </>
+            <Navbar bg="dark" variant="dark" fixed="top">
+                <Container>
+                    <Navbar.Brand>{info.editBtn ? "Edit Product" : "Add Product"}</Navbar.Brand>
+                    <div className="ml-auto">
+                        {info.editBtn ? (
+                            <Button variant="primary" onClick={handleEdit}>Edit Product</Button>
+                        ) : (
+                            <Button variant="primary" onClick={handleAdd}>Add Product</Button>
                         )}
-                        <Grid item xs={12}>
-                            <TextField
-                                label="Product Name"
-                                fullWidth
+                        <Button variant="danger" onClick={handleCancel} className="ml-2">Cancel</Button>
+                    </div>
+                </Container>
+            </Navbar>
+
+            <Container style={{ marginTop: '100px' }}>
+                <div className="bg-white p-4 rounded shadow-sm">
+                    <Form>
+                        {!info.editBtn && (
+                            <Form.Group controlId="productID">
+                                <Form.Label>Product ID</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    value={newObject.productID}
+                                    onChange={(e) => setNewObject({ ...newObject, productID: e.target.value })}
+                                    isInvalid={!!errors.productID}
+                                />
+                                <Form.Control.Feedback type="invalid">
+                                    {errors.productID}
+                                </Form.Control.Feedback>
+                            </Form.Group>
+                        )}
+
+                        <Form.Group controlId="productName">
+                            <Form.Label>Product Name</Form.Label>
+                            <Form.Control
+                                type="text"
                                 value={newObject.productName}
                                 onChange={(e) => setNewObject({ ...newObject, productName: e.target.value })}
-                                error={!!errors.productName}
-                                helperText={errors.productName}
+                                isInvalid={!!errors.productName}
                             />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                label="Description"
-                                fullWidth
+                            <Form.Control.Feedback type="invalid">
+                                {errors.productName}
+                            </Form.Control.Feedback>
+                        </Form.Group>
+
+                        <Form.Group controlId="description">
+                            <Form.Label>Description</Form.Label>
+                            <Form.Control
+                                type="text"
                                 value={newObject.description}
                                 onChange={(e) => setNewObject({ ...newObject, description: e.target.value })}
-                                error={!!errors.description}
-                                helperText={errors.description}
+                                isInvalid={!!errors.description}
                             />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                label="Category"
-                                fullWidth
+                            <Form.Control.Feedback type="invalid">
+                                {errors.description}
+                            </Form.Control.Feedback>
+                        </Form.Group>
+
+                        <Form.Group controlId="category">
+                            <Form.Label>Category</Form.Label>
+                            <Form.Control
+                                type="text"
                                 value={newObject.category}
                                 onChange={(e) => setNewObject({ ...newObject, category: e.target.value })}
-                                error={!!errors.category}
-                                helperText={errors.category}
+                                isInvalid={!!errors.category}
                             />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                label="Price"
-                                fullWidth
+                            <Form.Control.Feedback type="invalid">
+                                {errors.category}
+                            </Form.Control.Feedback>
+                        </Form.Group>
+
+                        <Form.Group controlId="price">
+                            <Form.Label>Price</Form.Label>
+                            <Form.Control
+                                type="number"
                                 value={newObject.price}
                                 onChange={(e) => setNewObject({ ...newObject, price: e.target.value })}
-                                error={!!errors.price}
-                                helperText={errors.price}
-                                type='number'
+                                isInvalid={!!errors.price}
                             />
-                        </Grid>
+                            <Form.Control.Feedback type="invalid">
+                                {errors.price}
+                            </Form.Control.Feedback>
+                        </Form.Group>
+
                         {!info.editBtn && (
-                            <>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        label="Stock Level"
-                                        fullWidth
-                                        value={newObject.stockLevel}
-                                        onChange={(e) => setNewObject({ ...newObject, stockLevel: e.target.value })}
-                                        error={!!errors.stockLevel}
-                                        helperText={errors.stockLevel}
-                                        type='number'
-                                    />
-                                </Grid>
-                            </>
+                            <Form.Group controlId="stockLevel">
+                                <Form.Label>Stock Level</Form.Label>
+                                <Form.Control
+                                    type="number"
+                                    value={newObject.stockLevel}
+                                    onChange={(e) => setNewObject({ ...newObject, stockLevel: e.target.value })}
+                                    isInvalid={!!errors.stockLevel}
+                                />
+                                <Form.Control.Feedback type="invalid">
+                                    {errors.stockLevel}
+                                </Form.Control.Feedback>
+                            </Form.Group>
                         )}
-                        <Grid item xs={12}>
-                            <FormControl fullWidth error={!!errors.status}>
-                                <InputLabel>Status</InputLabel>
-                                <Select
-                                    value={newObject.status}
-                                    onChange={(e) => setNewObject({ ...newObject, status: e.target.value })}
-                                >
-                                    <MenuItem value="Active">Active</MenuItem>
-                                    <MenuItem value="InActive">Inactive</MenuItem>
-                                </Select>
-                                {errors.status && <Typography color="error">{errors.status}</Typography>}
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                label="Vendor ID"
-                                fullWidth
+
+                        <Form.Group controlId="status">
+                            <Form.Label>Status</Form.Label>
+                            <Form.Control
+                                as="select"
+                                value={newObject.status}
+                                onChange={(e) => setNewObject({ ...newObject, status: e.target.value })}
+                                isInvalid={!!errors.status}
+                            >
+                                <option value="Active">Active</option>
+                                <option value="Inactive">Inactive</option>
+                            </Form.Control>
+                            <Form.Control.Feedback type="invalid">
+                                {errors.status}
+                            </Form.Control.Feedback>
+                        </Form.Group>
+
+                        <Form.Group controlId="vendorID">
+                            <Form.Label>Vendor ID</Form.Label>
+                            <Form.Control
+                                type="text"
                                 value={newObject.vendorID}
                                 onChange={(e) => setNewObject({ ...newObject, vendorID: e.target.value })}
-                                error={!!errors.vendorID}
-                                helperText={errors.vendorID}
+                                isInvalid={!!errors.vendorID}
                             />
-                        </Grid>
-                    </Grid>
+                            <Form.Control.Feedback type="invalid">
+                                {errors.vendorID}
+                            </Form.Control.Feedback>
+                        </Form.Group>
+                    </Form>
                 </div>
             </Container>
         </div>
@@ -278,3 +275,4 @@ const AddProduct = () => {
 };
 
 export default AddProduct;
+
