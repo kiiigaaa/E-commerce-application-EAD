@@ -1,23 +1,16 @@
 import { useState, useEffect } from 'react';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import { DataGrid } from '@mui/x-data-grid';
-import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { Table, Button, Container, Navbar, Form } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import SideBar from '../../Components/SideBar/SideBar.jsx';
-import { NavLink, useNavigate } from 'react-router-dom';
 import configs from '../../config.js';
 
 const ProductDash = () => {
     const [post, setPost] = useState([]);
     const navigate = useNavigate();
     const token = sessionStorage.getItem('token');
-    const userRole = sessionStorage.getItem("userRole");
+    const userRole = sessionStorage.getItem('userRole');
 
     useEffect(() => {
         fetchDetails();
@@ -41,6 +34,7 @@ const ProductDash = () => {
             console.error('Error fetching post details:', error);
         }
     };
+
     const handleEdit = (row) => {
         const editBtn = true;
         const data = { row, editBtn };
@@ -62,108 +56,79 @@ const ProductDash = () => {
                     text: 'Not Delete',
                     icon: 'error',
                     confirmButtonText: 'OK',
-                    type: 'success',
                 });
             });
     };
 
-    const columns = [
-        { field: 'productName', headerName: 'Product', width: 150 },
-        { field: 'description', headerName: 'Description', width: 300, },
-        { field: 'category', headerName: 'Category', width: 150 },
-        { field: 'price', headerName: 'Price', width: 150, },
-        { field: 'stockLevel', headerName: 'Stock Level', width: 150, },
-        {
-            field: 'status', headerName: 'Status', width: 150, renderCell: (params) => (
-                <div>
-                    {params.value === 'Active' ? (
-                        <Button variant="contained" color="success">
-                            {params.value}
-                        </Button>
-                    ) : (
-                        <Button variant="contained" color="error">
-                            {params.value}
-                        </Button>
-                    )}
-                </div>
-            ),
-        },
-        { field: 'vendorID', headerName: 'Vendor ID', width: 200, },
-        { field: 'createdDate', headerName: 'Created Date', width: 200, },
-        { field: 'modifiedDate', headerName: 'Modified Date', width: 200, },
-        {
-            field: 'actions',
-            headerName: 'Actions',
-            width: 100,
-            renderCell: (params) => (
-                (userRole === 'Admin' || userRole === 'Vendor') && (
-                    <>
-                        <div>
-                            <IconButton color="primary" onClick={() => handleEdit(params.row)}>
-                                <EditIcon />
-                            </IconButton>
-                            <IconButton color="error" onClick={() => handleDelete(params.row.productID)}>
-                                <DeleteIcon />
-                            </IconButton>
-                        </div>
-                    </>
-                )
-            ),
-        },
-    ];
-
     return (
         <div style={{ display: 'flex', height: '100vh', width: '100%' }}>
             <SideBar />
-            <div
-                style={{
-                    flexGrow: 1,
-                    padding: 20,
-                    backgroundColor: '#ecf0f1',
-                    display: 'flex',
-                    flexDirection: 'column',
-                }}
-            >
-                <AppBar position="static" sx={{ backgroundColor: '#1c2331', boxShadow: 'none' }}>
-                    <Toolbar>
-                        <Typography variant="h6" component="div">
-                            Product Management
-                        </Typography>
-                        <div style={{ flexGrow: 1 }}></div>
-                        {(userRole === 'Admin' || userRole === 'Vendor') && (
-                            <>
-                                <Button
-                                    sx={{ marginRight: '10px' }}
-                                    variant="contained"
-                                    color="primary"
-                                    component={NavLink}
-                                    to="/addProduct"
-                                >
+            <div style={{ flexGrow: 1, padding: 20, backgroundColor: '#ecf0f1', display: 'flex', flexDirection: 'column' }}>
+                <Navbar bg="dark" variant="dark">
+                    <Container>
+                        <Navbar.Brand>Product Management</Navbar.Brand>
+                        <Navbar.Collapse className="justify-content-end">
+                            {(userRole === 'Admin' || userRole === 'Vendor') && (
+                                <Button variant="primary" onClick={() => navigate('/addProduct')}>
                                     Add New Product
                                 </Button>
-                            </>
-                        )}
-                    </Toolbar>
-                </AppBar>
+                            )}
+                        </Navbar.Collapse>
+                    </Container>
+                </Navbar>
 
-                <div
-                    style={{
-                        padding: 20,
-                        backgroundColor: '#ffffff',
-                        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-                        maxWidth: '161vh',
-                    }}
-                >
-                    <Typography variant="h5" gutterBottom color={'black'}>
-                        Product Details
-                    </Typography>
-                    <div style={{ width: '100%' }}>
-                        <DataGrid rows={post} columns={columns} pageSize={5} />
-                    </div>
-                </div>
+                <Container style={{ marginTop: '20px', backgroundColor: '#ffffff', padding: '20px', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' }}>
+                    <h5>Product Details</h5>
+                    <Table striped bordered hover responsive>
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Description</th>
+                                <th>Category</th>
+                                <th>Price</th>
+                                <th>Stock Level</th>
+                                <th>Status</th>
+                                <th>Vendor ID</th>
+                                <th>Created Date</th>
+                                <th>Modified Date</th>
+                                {(userRole === 'Admin' || userRole === 'Vendor') && <th>Actions</th>}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {post.map((row) => (
+                                <tr key={row.id}>
+                                    <td>{row.productName}</td>
+                                    <td>{row.description}</td>
+                                    <td>{row.category}</td>
+                                    <td>{row.price}</td>
+                                    <td>{row.stockLevel}</td>
+                                    <td>
+                                        <Button variant={row.status === 'Active' ? 'success' : 'danger'}>
+                                            {row.status}
+                                        </Button>
+                                    </td>
+                                    <td>{row.vendorID}</td>
+                                    <td>{row.createdDate}</td>
+                                    <td>{row.modifiedDate}</td>
+                                    {(userRole === 'Admin' || userRole === 'Vendor') && (
+                                        <td>
+                                            <Button variant="primary" onClick={() => handleEdit(row)} style={{ marginRight: '10px' }}>
+                                                Edit
+                                            </Button>
+                                            <Button variant="danger" onClick={() => handleDelete(row.productID)}>
+                                                Delete
+                                            </Button>
+                                        </td>
+                                    )}
+                                </tr>
+                            ))}
+                        </tbody>
+                    </Table>
+                </Container>
             </div>
         </div>
     );
 };
 
 export default ProductDash;
+
