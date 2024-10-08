@@ -1,4 +1,18 @@
-﻿using Microsoft.AspNetCore.Authorization;
+/**************************************************************************
+ * File:        VendorController.cs
+ * Author:      Sapna
+ * Date:        20241006
+ * Description: This controller handles the vendor related API endpoints
+//                    
+ * ------------------------------------------------------------------------
+ * Revision History:
+ * Date          | Author      | Description
+ * ------------------------------------------------------------------------
+ * 20241006        |    Sapna|   This controller handles the vendor related API endpoints
+//                                   
+ *
+ **************************************************************************/
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Web.DataAccessLayer;
