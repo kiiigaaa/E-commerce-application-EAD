@@ -1,17 +1,10 @@
-import { useState, useEffect } from 'react';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import { DataGrid } from '@mui/x-data-grid';
-import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import SideBar from '../../Components/SideBar/SideBar.jsx';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { useNavigate, NavLink } from 'react-router-dom';
 import configs from '../../config.js';
+import SideBar from '../../Components/SideBar/SideBar.jsx';
+import { Container, Table, Button, Navbar, Nav } from 'react-bootstrap';
 
 const InventoryDash = () => {
     const [post, setPost] = useState([]);
@@ -41,6 +34,7 @@ const InventoryDash = () => {
             console.error('Error fetching post details:', error);
         }
     };
+
     const handleEdit = (row) => {
         const editBtn = true;
         const data = { row, editBtn };
@@ -62,86 +56,59 @@ const InventoryDash = () => {
                     text: 'Not Delete',
                     icon: 'error',
                     confirmButtonText: 'OK',
-                    type: 'success',
                 });
             });
     };
 
-    const columns = [
-        { field: 'productID', headerName: 'Product ID', width: 250 },
-        { field: 'productName', headerName: 'Product', width: 150 },
-        { field: 'stockLevel', headerName: 'Stock Level', width: 150 },
-
-        {
-            field: 'actions',
-            headerName: 'Actions',
-            width: 100,
-            renderCell: (params) => (
-                <div>
-                    {(userRole === 'Admin' || userRole === 'CSR') &&
-                        (
-                            <>
-                                <IconButton color="primary" onClick={() => handleEdit(params.row)}>
-                                    <EditIcon />
-                                </IconButton>
-                                <IconButton color="error" onClick={() => handleDelete(params.row.inventoryId)}>
-                                    <DeleteIcon />
-                                </IconButton>
-                            </>
-                        )}
-                </div>
-            ),
-        },
-    ];
-
     return (
         <div style={{ display: 'flex', height: '100vh', width: '100%' }}>
             <SideBar />
-            <div
-                style={{
-                    flexGrow: 1,
-                    padding: 20,
-                    backgroundColor: '#ecf0f1',
-                    display: 'flex',
-                    flexDirection: 'column',
-                }}
-            >
-                <AppBar position="static" sx={{ backgroundColor: '#1c2331', boxShadow: 'none' }}>
-                    <Toolbar>
-                        <Typography variant="h6" component="div">
-                            Inventory Management
-                        </Typography>
-                        <div style={{ flexGrow: 1 }}></div>
-                        {(userRole === 'Admin' || userRole === 'CSR') && (<>  <Button
-                            sx={{ marginRight: '10px' }}
-                            variant="contained"
-                            color="primary"
-                            component={NavLink}
-                            to="/addInventory"
-                        >
-                            Add New Inventory
-                        </Button></>)}
-                    </Toolbar>
-                </AppBar>
+            <div style={{ flexGrow: 1, padding: 20, backgroundColor: '#ecf0f1', display: 'flex', flexDirection: 'column' }}>
+                <Navbar bg="dark" variant="dark" expand="lg">
+                    <Navbar.Brand>Inventory Management</Navbar.Brand>
+                    <Nav className="ml-auto">
+                        {(userRole === 'Admin' || userRole === 'CSR') && (
+                            <Button as={NavLink} to="/addInventory" variant="primary" style={{ marginLeft: '10px' }}>
+                                Add New Inventory
+                            </Button>
+                        )}
+                    </Nav>
+                </Navbar>
 
-                <div
-                    style={{
-                        padding: 20,
-                        backgroundColor: '#ffffff',
-                        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-                        maxWidth: '161vh',
-                    }}
-                >
-                    <Typography variant="h5" gutterBottom color={'black'}>
-                        Inventory Details
-                    </Typography>
-                    <div style={{ width: '100%' }}>
-                        <DataGrid rows={post} columns={columns} pageSize={5} />
-                    </div>
-                </div>
+                <Container style={{ padding: 20, backgroundColor: '#ffffff', boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', borderRadius: '8px', marginTop: '20px' }}>
+                    <h5>Inventory Details</h5>
+                    <Table striped bordered hover responsive>
+                        <thead>
+                            <tr>
+                                <th>Product ID</th>
+                                <th>Product</th>
+                                <th>Stock Level</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {post.map((row) => (
+                                <tr key={row.inventoryId}>
+                                    <td>{row.productID}</td>
+                                    <td>{row.productName}</td>
+                                    <td>{row.stockLevel}</td>
+                                    <td>
+                                        {(userRole === 'Admin' || userRole === 'CSR') && (
+                                            <>
+                                                <Button variant="link" onClick={() => handleEdit(row)}>Edit</Button>
+                                                <Button variant="link" className="text-danger" onClick={() => handleDelete(row.inventoryId)}>Delete</Button>
+                                            </>
+                                        )}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </Table>
+                </Container>
             </div>
         </div>
     );
 };
 
 export default InventoryDash;
+
