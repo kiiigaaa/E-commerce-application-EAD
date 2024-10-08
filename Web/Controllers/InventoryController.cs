@@ -1,4 +1,17 @@
-﻿﻿using Microsoft.AspNetCore.Authorization;
+
+/**************************************************************************
+ * File:        InventoryController.cs
+ * Author:      Kihen
+ * Date:        20241006
+ * Description: InventoryController handles API requests related to inventory management
+ * ------------------------------------------------------------------------
+ * Revision History:
+ * Date          | Author      | Description
+ * ------------------------------------------------------------------------
+ * 20241006        | Kihen    | InventoryController handles API requests related to inventory management
+ *
+ **************************************************************************/
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Web.DataAccessLayer;
