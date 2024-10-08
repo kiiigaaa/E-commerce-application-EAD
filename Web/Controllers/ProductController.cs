@@ -1,4 +1,18 @@
-﻿using Microsoft.AspNetCore.Authorization;
+/**************************************************************************
+ * File:        ProductController.cs
+ * Author:      Kishen
+ * Date:        20241006
+ * Description: This controller handles the product related API endpoints
+//                    
+ * ------------------------------------------------------------------------
+ * Revision History:
+ * Date          | Author      | Description
+ * ------------------------------------------------------------------------
+ * 20241006        |    Kishen|   This controller handles the product related API endpoints
+//                                   
+ *
+ **************************************************************************/
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Web.DataAccessLayer;
