@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { TextField, Button, Container, Grid, Typography, AppBar, Toolbar, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import configs from '../../config.js';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const AddUser = () => {
     const navigate = useNavigate();
@@ -103,7 +103,7 @@ const AddUser = () => {
             errors.role = 'Role is required';
             isValid = false;
         }
-        if (!newObject.password.trim()) {
+        if (!newObject.password.trim() && !info.editBtn) {
             errors.password = 'Password is required';
             isValid = false;
         }
@@ -121,100 +121,85 @@ const AddUser = () => {
     };
 
     return (
-        <div style={{ height: '100vh', paddingTop: '64px', backgroundColor: '#f4f4f4' }}>
-            <AppBar position="fixed" style={{ backgroundColor: '#1c2331', boxShadow: 'none' }}>
-                <Toolbar>
-                    {(info.editBtn) ? (
-                        <Typography variant="h6" style={{ flexGrow: 1, fontWeight: 'bold' }}>
-                            Edit User
-                        </Typography>
-                    ) : (
-                        <Typography variant="h6" style={{ flexGrow: 1, fontWeight: 'bold' }}>
-                            Add User
-                        </Typography>
-                    )}
+        <div className="container" style={{ height: '100vh', paddingTop: '64px', backgroundColor: '#f4f4f4' }}>
+            <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+                <div className="container-fluid">
+                    <span className="navbar-brand">{info.editBtn ? 'Edit User' : 'Add User'}</span>
+                    <div className="ml-auto">
+                        <button className="btn btn-primary mx-2" onClick={info.editBtn ? handleEdit : handleAdd}>
+                            {info.editBtn ? 'Edit User' : 'Add User'}
+                        </button>
+                        <button className="btn btn-danger" onClick={handleCancel}>
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </nav>
 
-                    <div style={{ flexGrow: 1 }}></div>
-                    {(info.editBtn) ? (
-                        <Button variant="contained" color="primary" onClick={handleEdit}>
-                            Edit User
-                        </Button>
-                    ) : (
-                        <Button variant="contained" color="primary" onClick={handleAdd}>
-                            Add User
-                        </Button>
-                    )}
-                    <Button variant="contained" color="error" onClick={handleCancel} style={{ marginLeft: '8px' }}>
-                        Cancel
-                    </Button>
-                </Toolbar>
-            </AppBar>
-            <Container maxWidth="md" style={{ marginTop: '20px' }}>
-                <div style={{ backgroundColor: '#fff', padding: '24px', borderRadius: '8px', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)' }}>
-                    <Grid container spacing={3}>
-                        <Grid item xs={12}>
-                            <Typography variant="h6" style={{ marginBottom: '10px', color: 'black' }}>
-                                User Form
-                            </Typography>
-                            <hr />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                label="Email"
-                                fullWidth
+            <div className="container mt-5 pt-5">
+                <div className="card p-4">
+                    <h5 className="card-title">User Form</h5>
+                    <hr />
+                    <div className="row">
+                        <div className="col-md-12 mb-3">
+                            <label htmlFor="email" className="form-label">Email</label>
+                            <input
+                                type="email"
+                                className={`form-control ${errors.email ? 'is-invalid' : ''}`}
+                                id="email"
                                 value={newObject.email}
                                 onChange={(e) => setNewObject({ ...newObject, email: e.target.value })}
-                                error={!!errors.email}
-                                helperText={errors.email}
                             />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <FormControl fullWidth>
-                                <InputLabel id="role">Role</InputLabel>
-                                <Select
-                                    labelId="role"
-                                    value={newObject.role}
-                                    onChange={(e) => setNewObject({ ...newObject, role: e.target.value })}
-                                    error={!!errors.role}
-                                >
-                                    <MenuItem value="Admin">Admin</MenuItem>
-                                    <MenuItem value="CSR">CSR</MenuItem>
-                                    <MenuItem value="Vendor">Vendor</MenuItem>
-                                </Select>
-                            </FormControl>
-                        </Grid>
-                        {(!info.editBtn) ? (
-                            <Grid item xs={12}>
-                                <TextField
-                                    label="Password"
+                            {errors.email && <div className="invalid-feedback">{errors.email}</div>}
+                        </div>
+                        <div className="col-md-12 mb-3">
+                            <label htmlFor="role" className="form-label">Role</label>
+                            <select
+                                className={`form-control ${errors.role ? 'is-invalid' : ''}`}
+                                id="role"
+                                value={newObject.role}
+                                onChange={(e) => setNewObject({ ...newObject, role: e.target.value })}
+                            >
+                                <option value="">Select Role</option>
+                                <option value="Admin">Admin</option>
+                                <option value="CSR">CSR</option>
+                                <option value="Vendor">Vendor</option>
+                            </select>
+                            {errors.role && <div className="invalid-feedback">{errors.role}</div>}
+                        </div>
+                        {!info.editBtn && (
+                            <div className="col-md-12 mb-3">
+                                <label htmlFor="password" className="form-label">Password</label>
+                                <input
                                     type="password"
-                                    fullWidth
+                                    className={`form-control ${errors.password ? 'is-invalid' : ''}`}
+                                    id="password"
                                     value={newObject.password}
                                     onChange={(e) => setNewObject({ ...newObject, password: e.target.value })}
-                                    error={!!errors.password}
-                                    helperText={errors.password}
                                 />
-                            </Grid>
-                        ) : null}
-                        <Grid item xs={12}>
-                            <FormControl fullWidth>
-                                <InputLabel id="status">Status</InputLabel>
-                                <Select
-                                    labelId="status"
-                                    value={newObject.status}
-                                    onChange={(e) => setNewObject({ ...newObject, status: e.target.value })}
-                                    error={!!errors.status}
-                                >
-                                    <MenuItem value="Active">Active</MenuItem>
-                                    <MenuItem value="InActive">InActive</MenuItem>
-                                </Select>
-                            </FormControl>
-                        </Grid>
-                    </Grid>
+                                {errors.password && <div className="invalid-feedback">{errors.password}</div>}
+                            </div>
+                        )}
+                        <div className="col-md-12 mb-3">
+                            <label htmlFor="status" className="form-label">Status</label>
+                            <select
+                                className={`form-control ${errors.status ? 'is-invalid' : ''}`}
+                                id="status"
+                                value={newObject.status}
+                                onChange={(e) => setNewObject({ ...newObject, status: e.target.value })}
+                            >
+                                <option value="">Select Status</option>
+                                <option value="Active">Active</option>
+                                <option value="InActive">InActive</option>
+                            </select>
+                            {errors.status && <div className="invalid-feedback">{errors.status}</div>}
+                        </div>
+                    </div>
                 </div>
-            </Container>
+            </div>
         </div>
     );
 };
 
 export default AddUser;
+
