@@ -10,8 +10,8 @@ import AddProduct from './Pages/AdminDash/AddProduct';
 import OrderDash from './Pages/AdminDash/OrderDash';
 import VendorDash from './Pages/AdminDash/VendorDash';
 import AddVendor from './Pages/AdminDash/AddVendor';
-import 'bootstrap/dist/css/bootstrap.min.css';
-
+import InvoiceManager from './Pages/AdminDash/InvoicePage';
+import "bootstrap/dist/css/bootstrap.min.css";
 
 
 function App() {
@@ -30,6 +30,7 @@ function App() {
         <Route path="/orderDash" element={<OrderDash />} />
         <Route path="/vendorDash" element={<VendorDash />} />
         <Route path="/addVendor" element={<AddVendor />} />
+        <Route path="/invoiceDash" element={<InvoiceManager />} />
       </Routes>
     </Router>
   );
