@@ -9,6 +9,7 @@ import ListItemText from '@mui/material/ListItemText';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import BadgeIcon from '@mui/icons-material/Badge';
 import LogoutIcon from '@mui/icons-material/Logout';
+import ReceiptIcon from '@mui/icons-material/Receipt'; // Icon for Invoice
 import { useNavigate } from 'react-router-dom';
 import { Typography } from '@material-ui/core';
 
@@ -52,7 +53,6 @@ const SideBar = () => {
           },
         }}
       >
-
         <>
           <Toolbar sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 100 }}>
             <Typography variant="h5" sx={{ color: '#ecf0f1' }}>
@@ -119,6 +119,18 @@ const SideBar = () => {
               </ListItemIcon>
               <ListItemText primary="Vendor Panel" />
             </ListItem>
+            {/* Add the Invoice Panel */}
+            <ListItem
+              button
+              selected={selectedItem === 'invoiceDash'}
+              onClick={() => handleItemClick('invoiceDash')}
+              sx={{ '&:hover': { backgroundColor: '#2c3e50' } }}
+            >
+              <ListItemIcon>
+                <ReceiptIcon sx={{ color: '#ecf0f1' }} />
+              </ListItemIcon>
+              <ListItemText primary="Invoice Panel" />
+            </ListItem>
           </List>
           <List sx={{ marginTop: 'auto' }}>
             <ListItem button onClick={handleLogout} sx={{ '&:hover': { backgroundColor: '#2c3e50' } }}>
@@ -135,3 +147,4 @@ const SideBar = () => {
 };
 
 export default SideBar;
+
